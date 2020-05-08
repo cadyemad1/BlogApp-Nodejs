@@ -3,6 +3,7 @@ var bcrypt = require('bcryptjs');
 const { promisify } = require('util');
 var jwt = require('jsonwebtoken');
 const { jwtSecretKey } = require('../config');
+var omit = require('lodash.omit');
 
 const signJWT = promisify(jwt.sign);
 const verifyJWT = promisify(jwt.verify);
@@ -32,7 +33,12 @@ const userSchema = new mongoose.Schema(
     //   ref: 'blog'
     // }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (doc, ret) => omit(ret, ['__v', 'createdAt'])
+    }
+  }
 );
 userSchema.index({ username: 'text' });
 

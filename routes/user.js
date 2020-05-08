@@ -29,6 +29,7 @@ router.post('/login', async (req, res, next) => {
       const token = await user.generateToken();
       res.status(200).send({
         message: 'Logged in successfully',
+        user,
         token
       });
     } else {
