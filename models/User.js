@@ -28,10 +28,6 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     }
-    // blogs: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: 'blog'
-    // }
   },
   {
     timestamps: true,
@@ -41,6 +37,12 @@ const userSchema = new mongoose.Schema(
   }
 );
 userSchema.index({ username: 'text' });
+
+userSchema.virtual('blogs', {
+  ref: 'Blog',
+  localField: '_id',
+  foreignField: 'author'
+});
 
 userSchema.pre('save', async function(next) {
   if (this.password || this.isModified(password)) {
