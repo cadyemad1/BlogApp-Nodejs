@@ -24,10 +24,14 @@ const blogSchema = mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => omit(ret, ['__v'])
-    }
+      transform: (doc, ret) => omit(ret, ['__v']),
+      virtuals: true
+    },
+    toObject: { virtuals: true }
   }
 );
+
+blogSchema.index({ title: 'text' });
 
 const Blog = mongoose.model('Blog', blogSchema);
 

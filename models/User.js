@@ -32,8 +32,10 @@ const userSchema = new mongoose.Schema(
   {
     timestamps: true,
     toJSON: {
-      transform: (doc, ret) => omit(ret, ['__v', 'createdAt'])
-    }
+      transform: (doc, ret) => omit(ret, ['__v', 'createdAt']),
+      virtuals: true
+    },
+    toObject: { virtuals: true }
   }
 );
 userSchema.index({ username: 'text' });
