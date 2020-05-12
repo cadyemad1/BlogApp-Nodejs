@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({
@@ -55,4 +55,23 @@ const getUserBlogs = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getUserBlogs };
+const followUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req;
+    //find if user.following list contains id
+    if (!user.followingList.includes(id)) {
+      console.log('true');
+      await User.updateOne({ _id: user._id }, { $push: { followingList: id } });
+      res.status(200).send(user);
+    } else {
+      await User.updateOne({ _id: user._id }, { $pull: { followingList: id } });
+      res.status(200).send(user);
+    }
+  } catch (err) {
+    console.log(err);
+
+    res.send(err);
+  }
+};
+module.exports = { register, login, getUserBlogs, followUser };

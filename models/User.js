@@ -24,10 +24,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: [true, 'You must have an email']
     },
-    followingList: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
+    followingList: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+      }
+    ]
   },
   {
     timestamps: true,
@@ -60,7 +62,7 @@ userSchema.methods.checkPassword = function(userPassword) {
 };
 
 userSchema.methods.generateToken = function() {
-  return signJWT({ _id: this._id }, jwtSecretKey, { expiresIn: '30min' });
+  return signJWT({ _id: this._id }, jwtSecretKey, { expiresIn: '10d' });
 };
 
 userSchema.statics.verifyToken = async function(token) {
