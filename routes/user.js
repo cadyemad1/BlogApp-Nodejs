@@ -5,17 +5,33 @@ const {
   login,
   register,
   getUserBlogs,
-  followUser
+  followUser,
+  getFollowersBlog
 } = require('../controllers/user');
+const { check } = require('express-validator');
+const validationReqs = require('../middlewares/validateRequests');
 
 const router = express.Router();
 
-router.post('/login', login);
+router.post(
+  '/login',
+  validationReqs([check('password').notEmpty(), check('email').notEmpty()]),
+  login
+);
 
-router.post('/register', register);
+router.post(
+  '/register',
+  validationReqs([
+    check('username').notEmpty(),
+    check('password').notEmpty(),
+    check('email').notEmpty()
+  ]),
+  register
+);
 
-router.get('/', getUserBlogs);
+router.get('/', authnticateUser, getUserBlogs);
 
 router.patch('/:id', authnticateUser, followUser);
 
+router.get('/followed', authnticateUser, getFollowersBlog);
 module.exports = router;

@@ -6,14 +6,15 @@ const blogSchema = mongoose.Schema(
   {
     title: {
       type: String,
-      require: [true, 'Blog must have a title']
+      required: [true, 'Blog must have a title']
     },
     body: {
       type: String,
-      require: [true, 'Blog must have a body']
+      required: [true, 'Blog must have a body']
     },
-    imgUrl: {
-      type: String
+    img: {
+      type: String,
+      default: 'avatar.png'
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
