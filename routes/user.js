@@ -10,7 +10,7 @@ const {
   recommendUsers
 } = require('../controllers/user');
 const { check } = require('express-validator');
-const validationReqs = require('../middlewares/validateRequests');
+const validationReqs = require('../middlewares/ValidateRequests');
 
 const router = express.Router();
 
