@@ -1,6 +1,6 @@
 const Blog = require('../models/Blog');
 const User = require('../models/User');
-const cloudinary = require('../handlers/cloudinary');
+const cloudinary = require('../handlers/Cloudinary');
 
 const catchAsync = require('../utils/CatchAsync');
 const CustomError = require('../utils/CustomError');

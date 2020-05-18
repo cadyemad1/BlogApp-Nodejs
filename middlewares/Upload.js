@@ -1,5 +1,4 @@
 const multer = require('multer');
-const sharp = require('sharp');
 
 const multerStorage = multer.diskStorage({
   filename: (req, file, cb) => {
