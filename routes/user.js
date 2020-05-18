@@ -6,7 +6,8 @@ const {
   register,
   getUserBlogs,
   followUser,
-  getFollowersBlog
+  getFollowersBlog,
+  recommendUsers
 } = require('../controllers/user');
 const { check } = require('express-validator');
 const validationReqs = require('../middlewares/validateRequests');
@@ -34,4 +35,6 @@ router.get('/', authnticateUser, getUserBlogs);
 router.patch('/:id', authnticateUser, followUser);
 
 router.get('/followed', authnticateUser, getFollowersBlog);
+
+router.get('/recommendations', authnticateUser, recommendUsers);
 module.exports = router;

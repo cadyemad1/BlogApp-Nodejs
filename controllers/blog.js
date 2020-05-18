@@ -3,6 +3,7 @@ const User = require('../models/User');
 const cloudinary = require('../handlers/cloudinary');
 
 const catchAsync = require('../utils/CatchAsync');
+const CustomError = require('../utils/CustomError');
 
 const getBlogs = catchAsync(async (req, res) => {
   const page = req.query.page * 1;
@@ -17,15 +18,17 @@ const getBlogs = catchAsync(async (req, res) => {
     .skip(skip)
     .limit(limit)
     .lean();
-  //test leaan
+
   if (req.query.page) {
     const totalBlogs = await Blog.estimatedDocumentCount();
     if (skip >= totalBlogs) {
       // throw new Error();
+
       res.status(404).json({ message: 'You Checked All Posts 🎉' });
       return;
     }
   }
+
   res.send(blogs);
 });
 
@@ -33,23 +36,24 @@ const addBlog = catchAsync(async (req, res) => {
   if (req.file) {
     const img = await cloudinary.uploader.upload(req.file.path);
     req.body.img = img.url;
-    req.body.author = req.user._id;
-    // const fileName = req.file.filename;
-    // req.body = { ...req.body, img: fileName };
   }
+  req.body.author = req.user._id;
   const blog = new Blog(req.body);
   await blog.save();
-  res.send(blog);
-  // res.status(200).json({ message: 'blog was added successfully' });
+  // res.send(blog);
+  res.status(200).json({ message: 'blog was added successfully' });
 });
 
 const updateBlog = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  // const { id } = req.params;
+  const { id } = req.blog;
+  const { title, body, tags } = req.body;
+
   const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, {
     runValidators: true,
-    new: true,
-    useFindAndModify: false
+    new: true
   });
+
   res
     .status(200)
     .json({ message: 'Blog was edited successfully', updatedBlog });
@@ -57,7 +61,7 @@ const updateBlog = catchAsync(async (req, res) => {
 
 const searchBlog = catchAsync(async (req, res) => {
   const { searchquery } = req.query;
-  // const blogs = await Blog.findAll({ $text: { $search: searchquery } });
+
   const [blogs = [], blogsByUser = [], blogsByTag = []] = await Promise.all([
     Blog.find({
       title: { $regex: new RegExp(searchquery) }
@@ -67,7 +71,7 @@ const searchBlog = catchAsync(async (req, res) => {
     }),
 
     User.find({
-      username: { $regex: new RegExp(searchquery) }
+      username: { $regex: new RegExp(searchquery), $options: 'i' }
     })
       .select('blogs username')
       .populate('blogs'),
@@ -78,16 +82,22 @@ const searchBlog = catchAsync(async (req, res) => {
     })
   ]);
 
-  //to return only blogs inside User without username
-  let userBlogs = [];
+  let newData = [];
   if (blogsByUser.length) {
-    blogsByUser.forEach(el => {
-      userBlogs = el.blogs;
-    });
+    newData = blogsByUser.map(el => {
+      return el.blogs.map(blog => ({
+        title: blog.title,
+        body: blog.body,
+        tags: blog.tags,
+        img: blog.img,
+        id: blog.id,
+        author: { _id: el.id, username: el.username }
+      }));
+    })[0];
   }
 
-  const result = [...blogs, ...blogsByTag, ...blogsByUser];
-  if (!result.length) throw new Error();
+  const result = [...blogs, ...blogsByTag, ...newData];
+  if (!result.length) res.send([]);
 
   //To remove duplicates
   let uniqueBlogs = result.reduce((distinctBlogs, blog) => {

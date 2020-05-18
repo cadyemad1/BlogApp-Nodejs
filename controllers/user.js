@@ -81,10 +81,25 @@ const getFollowersBlog = catchAsync(async (req, res) => {
   res.status(200).send(blogs);
 });
 
+const recommendUsers = catchAsync(async (req, res) => {
+  const { user } = req;
+  const recUser = await User.find({
+    $and: [
+      { _id: { $nin: user.followingList } },
+      { _id: { $not: { $eq: user._id } } }
+    ]
+  })
+    .limit(4)
+    .lean();
+
+  res.status(200).send(recUser);
+});
+
 module.exports = {
   register,
   login,
   getUserBlogs,
   followUser,
-  getFollowersBlog
+  getFollowersBlog,
+  recommendUsers
 };

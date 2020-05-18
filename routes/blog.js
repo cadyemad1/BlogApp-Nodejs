@@ -34,8 +34,8 @@ router.patch(
   updateBlog
 );
 
-router.get('/search', searchBlog);
+router.get('/search', authnticateUser, searchBlog);
 
-router.delete('/:id', deleteBlog);
+router.delete('/:id', authnticateUser, validateOwnership, deleteBlog);
 
 module.exports = router;
