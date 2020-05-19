@@ -38,6 +38,11 @@ const register = catchAsync(async (req, res, next) => {
   });
 });
 
+const getUserByToken = catchAsync(async (req, res, next) => {
+  const { user } = req;
+  res.status(200).send(user);
+});
+
 const getUserBlogs = catchAsync(async (req, res) => {
   const { id } = req.query;
   const user = await User.findOne({
@@ -101,5 +106,6 @@ module.exports = {
   getUserBlogs,
   followUser,
   getFollowersBlog,
-  recommendUsers
+  recommendUsers,
+  getUserByToken
 };

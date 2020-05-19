@@ -4,14 +4,14 @@ const CustomError = require('../utils/CustomError');
 const handleDuplicate = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
   console.log(value);
-  const message = `Duplicate field!`;
+  const message = `User Already Exists`;
   return new CustomError(message, 400);
 };
 const handleJWTError = () =>
-  new AppError('Invalid token. Please log in again!', 401);
+  new CustomError('Invalid token. Please log in again!', 401);
 
 const handleJWTExpiredError = () =>
-  new AppError('Your token has expired! Please log in again.', 401);
+  new CustomError('Your token has expired! Please log in again.', 401);
 
 const sendErrDev = (err, res) => {
   res.status(err.statusCode).json({

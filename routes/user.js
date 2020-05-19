@@ -7,7 +7,8 @@ const {
   getUserBlogs,
   followUser,
   getFollowersBlog,
-  recommendUsers
+  recommendUsers,
+  getUserByToken
 } = require('../controllers/user');
 const { check } = require('express-validator');
 const validationReqs = require('../middlewares/ValidateRequests');
@@ -31,6 +32,8 @@ router.post(
 );
 
 router.get('/', authnticateUser, getUserBlogs);
+
+router.get('/verify', authnticateUser, getUserByToken);
 
 router.patch('/:id', authnticateUser, followUser);
 
