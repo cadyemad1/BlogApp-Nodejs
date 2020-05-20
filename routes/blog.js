@@ -30,7 +30,7 @@ router.patch(
   '/:id',
   authnticateUser,
   validateOwnership,
-  validationReqs([check('title').notEmpty(), check('body').notEmpty()]),
+  uploadUserPhoto,
   updateBlog
 );
 

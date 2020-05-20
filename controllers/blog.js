@@ -40,23 +40,33 @@ const addBlog = catchAsync(async (req, res) => {
   req.body.author = req.user._id;
   const blog = new Blog(req.body);
   await blog.save();
+  Blog.populate(blog, { path: 'author', select: 'username' }, function(
+    err,
+    blog
+  ) {
+    res.status(200).send({ message: 'blog was added successfully', blog });
+  });
+
   // res.send(blog);
-  res.status(200).json({ message: 'blog was added successfully' });
 });
 
 const updateBlog = catchAsync(async (req, res) => {
-  // const { id } = req.params;
+  if (req.file) {
+    const img = await cloudinary.uploader.upload(req.file.path);
+    req.body.img = img.url;
+  }
   const { id } = req.blog;
-  const { title, body, tags } = req.body;
 
-  const updatedBlog = await Blog.findByIdAndUpdate(id, req.body, {
+  const blog = await Blog.findByIdAndUpdate(id, req.body, {
     runValidators: true,
     new: true
   });
-
-  res
-    .status(200)
-    .json({ message: 'Blog was edited successfully', updatedBlog });
+  Blog.populate(blog, { path: 'author', select: 'username' }, function(
+    err,
+    blog
+  ) {
+    res.status(200).send({ message: 'blog was edited successfully', blog });
+  });
 });
 
 const searchBlog = catchAsync(async (req, res) => {

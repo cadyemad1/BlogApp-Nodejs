@@ -5,8 +5,13 @@ module.exports = validators => async (req, res, next) => {
   const promises = validators.map(validator => validator.run(req));
   await Promise.all(promises);
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
-    const error = new CustomError('Validation error!', 422, errors.mapped());
+    const error = new CustomError(
+      'Missing Required Fields!',
+      422,
+      errors.mapped()
+    );
     return next(error);
   }
   next();
