@@ -33,9 +33,13 @@ const getBlogs = catchAsync(async (req, res) => {
 });
 
 const addBlog = catchAsync(async (req, res) => {
+  const placeholderImage =
+    'http://res.cloudinary.com/dwcqkjkzg/image/upload/v1589982392/au4d2qhmqjxmjgrwo7qj.png';
   if (req.file) {
     const img = await cloudinary.uploader.upload(req.file.path);
     req.body.img = img.url;
+  } else {
+    req.body.img = placeholderImage;
   }
   req.body.author = req.user._id;
   const blog = new Blog(req.body);
@@ -46,8 +50,6 @@ const addBlog = catchAsync(async (req, res) => {
   ) {
     res.status(200).send({ message: 'blog was added successfully', blog });
   });
-
-  // res.send(blog);
 });
 
 const updateBlog = catchAsync(async (req, res) => {
@@ -100,21 +102,26 @@ const searchBlog = catchAsync(async (req, res) => {
         body: blog.body,
         tags: blog.tags,
         img: blog.img,
-        id: blog.id,
+        _id: blog.id,
         author: { _id: el.id, username: el.username }
       }));
-    })[0];
+    });
   }
+  let flatData = [];
+  newData.forEach(el => {
+    flatData = [...flatData, ...el];
+  });
 
-  const result = [...blogs, ...blogsByTag, ...newData];
+  const result = [...blogs, ...blogsByTag, ...flatData];
   if (!result.length) res.send([]);
 
   //To remove duplicates
   let uniqueBlogs = result.reduce((distinctBlogs, blog) => {
-    return distinctBlogs.findIndex(el => el.id === blog.id) === -1
+    return distinctBlogs.findIndex(el => el._id === blog._id) === -1
       ? [...distinctBlogs, blog]
       : distinctBlogs;
   }, []);
+  console.log(uniqueBlogs);
 
   res.send(uniqueBlogs);
 });

@@ -13,8 +13,7 @@ const blogSchema = mongoose.Schema(
       required: [true, 'Blog must have a body']
     },
     img: {
-      type: String,
-      default: 'avatar.png'
+      type: String
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
