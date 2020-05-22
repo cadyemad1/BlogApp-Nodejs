@@ -76,7 +76,7 @@ const searchBlog = catchAsync(async (req, res) => {
 
   const [blogs = [], blogsByUser = [], blogsByTag = []] = await Promise.all([
     Blog.find({
-      title: { $regex: new RegExp(searchquery) }
+      title: { $regex: new RegExp(searchquery), $options: 'i' }
     }).populate({
       path: 'author',
       select: 'username'
