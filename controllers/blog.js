@@ -88,7 +88,7 @@ const searchBlog = catchAsync(async (req, res) => {
       .select('blogs username')
       .populate('blogs'),
 
-    Blog.find({ tags: [searchquery] }).populate({
+    Blog.find({ tags: { $all: [searchquery] } }).populate({
       path: 'author',
       select: 'username'
     })
