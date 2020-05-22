@@ -56,6 +56,8 @@ const updateBlog = catchAsync(async (req, res) => {
   if (req.file) {
     const img = await cloudinary.uploader.upload(req.file.path);
     req.body.img = img.url;
+  } else {
+    req.body.img = req.blog.img;
   }
   const { id } = req.blog;
 
